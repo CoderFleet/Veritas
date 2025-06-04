@@ -1,8 +1,12 @@
 import express, { Application, Request, Response } from "express";
 import { signup, signin } from "./controllers/userController";
 import connectDB from "./database/db"
-const app: Application = express();
+import { postContent } from "./controllers/contentController";
+import dotenv from 'dotenv';
 
+dotenv.config();
+
+const app: Application = express();
 app.use(express.json())
 // @ts-ignore
 app.post("/api/v1/signup", signup)
@@ -10,7 +14,8 @@ app.post("/api/v1/signup", signup)
 // @ts-ignore
 app.post("/api/v1/signin", signin)
 
-app.post("/api/v1/content", )
+// @ts-ignore
+app.post("/api/v1/content", postContent)
 
 app.get("/api/v1/content", (req, res) => {
 
