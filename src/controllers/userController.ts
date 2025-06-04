@@ -1,37 +1,15 @@
 import { NextFunction, Request, Response } from "express"
-import { z, ZodObject } from "zod";
+import { UserValidationSchema, SignInValidationSchema } from "../utils/zodSchemas";
 import { userModel } from "../models/userModel";
 
-
-// Zod Schemas
-const User = z.object({
-    fullName: z.string().min(3).max(100),
-    username: z.string().min(3, "User name can't be that short").max(100),
-    email: z.string().email(),
-    password: z.string()
-        .min(8, "Password must be at least 8 characters long")
-        .max(100, "Password must be no more than 100 characters")
-        .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-        .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-        .regex(/[0-9]/, "Password must contain at least one number")
-        .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
-})
-
-const signInSchema = z.object({
-    email: z.string().email().optional(),
-    username: z.string().min(3).max(100).optional(),
-    password: z.string().min(8),
-}).refine((data) => data.email || data.username, {
-    message: 'Either email or password is required',
-    path: ['username']
-})
-
 // User Controller methods
+// Todo directly send req.body in validation
+
 const signup = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { fullName, username, email, password } = req.body;
 
-        const result = User.safeParse({ fullName, username, email, password });
+        const result = UserValidationSchema.safeParse({ fullName, username, email, password });
         if (!result.success) {
             console.log(result.error);
             return res.status(400).json(result.error.flatten().fieldErrors);
@@ -69,7 +47,7 @@ const signin = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { username, email, password } = req.body;
 
-        const result = signInSchema.safeParse({ email, username, password });
+        const result = SignInValidationSchema.safeParse({ email, username, password });
 
         if (!result.success) {
             console.log(result.error);
