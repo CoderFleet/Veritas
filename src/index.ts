@@ -21,7 +21,7 @@ app.post("/api/v1/signin", signin)
 app.post("/api/v1/content", authMiddleware, postContent)
 
 app.get("/api/v1/content",(req, res) => {
-
+    
 })
 
 app.delete("/api/v1/content", (req, res) => {

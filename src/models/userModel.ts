@@ -1,4 +1,4 @@
-import { model, Schema, InferSchemaType } from 'mongoose';
+import { model, Schema, InferSchemaType, Document } from 'mongoose';
 import jwt, { SignOptions } from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
@@ -90,4 +90,6 @@ export interface IUser extends UserType {
     generateRefreshToken(): string;
 }
 
-export const userModel = model<IUser>("User", userSchema);
+type IUserDocument = IUser & Document;
+
+export const userModel = model<IUserDocument>("User", userSchema);
