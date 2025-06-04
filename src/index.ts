@@ -4,6 +4,7 @@ import connectDB from "./database/db"
 import { postContent } from "./controllers/contentController";
 import dotenv from 'dotenv';
 import cookieParser from "cookie-parser"
+import { authMiddleware } from "./middlewares/authMiddleware";
 
 dotenv.config();
 
@@ -17,7 +18,7 @@ app.post("/api/v1/signup", signup)
 app.post("/api/v1/signin", signin)
 
 // @ts-ignore
-app.post("/api/v1/content", postContent)
+app.post("/api/v1/content", authMiddleware, postContent)
 
 app.get("/api/v1/content",(req, res) => {
 
