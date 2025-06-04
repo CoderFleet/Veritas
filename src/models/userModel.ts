@@ -1,4 +1,5 @@
-import { model, Schema } from 'mongoose';
+import { model, Schema, InferSchemaType } from 'mongoose';
+import jwt, { SignOptions } from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
 const userSchema = new Schema(
@@ -27,6 +28,9 @@ const userSchema = new Schema(
         password: {
             type: String,
             required: [true, "Password is required"],
+        },
+        refreshToken: {
+            type: String
         }
     }
 )
@@ -43,4 +47,47 @@ userSchema.methods.isPasswordCorrect = async function (password: string) {
     return await bcrypt.compare(password, this.password);
 };
 
-export const userModel = model("User", userSchema);
+userSchema.methods.generateAccessToken = function () {
+    const secret = process.env.ACCESS_TOKEN_SECRET as string;
+    const expiry = process.env.ACCESS_TOKEN_EXPIRY as string;
+    if (!secret || !expiry) throw new Error("Couldn't find ACCESS_TOKEN_SECRET");
+
+    const payload = {
+        _id: this._id,
+        email: this.email,
+        username: this.username,
+        fullName: this.fullName
+    };
+
+    const options: SignOptions = {
+        expiresIn: expiry as any,
+    };
+
+    return jwt.sign(payload, secret, options);
+};
+
+userSchema.methods.generateRefreshToken = function () {
+    const secret = process.env.REFRESH_TOKEN_SECRET as string;
+    const expiry = process.env.REFRESH_TOKEN_EXPIRY as string;
+    if (!secret || !expiry) throw new Error("Couldn't find REFRESH_TOKEN_SECRET");
+
+    const payload = {
+        _id: this._id,
+    };
+
+    const options: SignOptions = {
+        expiresIn: expiry as any,
+    };
+
+    return jwt.sign(payload, secret, options);
+};
+
+type UserType = InferSchemaType<typeof userSchema>
+
+export interface IUser extends UserType {
+    isPasswordCorrect(password: string): Promise<boolean>;
+    generateAccessToken(): string;
+    generateRefreshToken(): string;
+}
+
+export const userModel = model<IUser>("User", userSchema);

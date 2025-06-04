@@ -1,13 +1,15 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application } from "express";
 import { signup, signin } from "./controllers/userController";
 import connectDB from "./database/db"
 import { postContent } from "./controllers/contentController";
 import dotenv from 'dotenv';
+import cookieParser from "cookie-parser"
 
 dotenv.config();
 
 const app: Application = express();
 app.use(express.json())
+app.use(cookieParser())
 // @ts-ignore
 app.post("/api/v1/signup", signup)
 
@@ -17,7 +19,7 @@ app.post("/api/v1/signin", signin)
 // @ts-ignore
 app.post("/api/v1/content", postContent)
 
-app.get("/api/v1/content", (req, res) => {
+app.get("/api/v1/content",(req, res) => {
 
 })
 
