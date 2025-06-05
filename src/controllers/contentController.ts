@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ContentValidationSchema } from "../utils/zodSchemas";
+import { ContentValidationSchema, DeleteContentParamsSchema } from "../utils/zodSchemas";
 import { Content } from "../models/contentModel";
 import { Tag } from "../models/tagModel";
 
@@ -77,6 +77,13 @@ export const deleteContent = async (
 ) => {
   try {
     const content = req.body.contentId;
+    // Validate contentId
+    // Assuming contentId is passed in the request body
+    const validation = DeleteContentParamsSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json(validation.error.flatten().fieldErrors);
+    }
+
     if (!content) {
       return res.status(400).json({
         statusCode: 400,

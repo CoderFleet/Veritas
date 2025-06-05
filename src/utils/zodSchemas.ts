@@ -49,3 +49,23 @@ export const ContentValidationSchema = z.object({
     .max(10, "Can't have that many tags...(Don't be a tagpaglu)"),
   type: z.enum(contentTypes),
 });
+
+export const ObjectIdValidationSchema = z.string().regex(objectIDRegex, {
+  message: "Invalid ObjectId format",
+});
+
+export const ShareLinkValidationSchema = z.object({
+  share: z.boolean(),
+});
+
+export const ShareLinkParamsSchema = z.object({
+  shareLink: z.string().regex(objectIDRegex, {
+    message: "Invalid share link format",
+  }),
+});
+
+export const DeleteContentParamsSchema = z.object({
+  contentId: z.string().regex(objectIDRegex, {
+    message: "Invalid content ID format",
+  }),
+});

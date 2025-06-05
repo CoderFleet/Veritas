@@ -5,6 +5,7 @@ import { getContent, postContent, deleteContent } from "./controllers/contentCon
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { authMiddleware } from "./middlewares/authMiddleware";
+import { generateLink, getLinkData } from "./controllers/linkController";
 
 dotenv.config();
 
@@ -30,13 +31,17 @@ app.get("/api/v1/content", authMiddleware, (req, res, next) => {
   Promise.resolve(getContent(req, res, next)).catch(next);
 });
 
-app.delete("/api/v1/content", (req, res, next) => {
+app.delete("/api/v1/content", authMiddleware, (req, res, next) => {
     Promise.resolve(deleteContent(req, res, next)).catch(next);
 });
 
-app.post("/api/v1/brain/share", (req, res) => {});
+app.post("/api/v1/brain/share", authMiddleware, (req, res, next) => {
+    Promise.resolve(generateLink(req, res, next)).catch(next);
+});
 
-app.get("/api/v1/brain/:shareLink", (req, res) => {});
+app.get("/api/v1/brain/:shareLink", authMiddleware, (req, res, next) => {
+    Promise.resolve(getLinkData(req, res, next)).catch(next);
+});
 
 connectDB()
   .then(() => {
